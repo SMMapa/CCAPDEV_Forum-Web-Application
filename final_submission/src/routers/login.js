@@ -28,7 +28,7 @@ loginRouter.post('/go-login', async (req, res) => {
         // Check if user exists and the provided password matches
         if (user && prof) {
             // Authentication successful
-            console.log("user exists");
+            //console.log("user exists");
             bcrypt.compare(password,user.password,function(err,result) {
                 if(result) {
                     req.session.username = username;
