@@ -33,10 +33,11 @@ postRouter.get('/home', async (req,res) => {
 
 postRouter.post('/make-post', async (req,res) => {
     console.log(req.body);
-    try {
+    if(req.session.username) {
+        try {
         await Post.create({
             postid: req.body.postid,
-            username: req.body.username,
+            username: req.session.username,
             name: req.body.name,
             date: req.body.date,
             title: req.body.title,
@@ -45,8 +46,11 @@ postRouter.post('/make-post', async (req,res) => {
             hasImage: req.body.hasImage
         })
         res.sendStatus(200);
-    }catch(err) {
+        }catch(err) {
         console.error(err);
+        }
+    }else {
+        res.redirect('/error');
     }
 });
 
@@ -83,7 +87,7 @@ postRouter.post('/make-comment', async(req,res) => {
         await Comment.create({
             original_postid: req.body.original_postid,
             commentid: req.body.commentid,
-            username: req.body.username,
+            username: req.session.username,
             name: req.body.name,
             date: req.body.date,
             text: req.body.text
