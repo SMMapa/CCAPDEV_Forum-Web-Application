@@ -5,6 +5,7 @@ import express from 'express';
 import Post from '../models/Post.js';
 import Comment from '../models/Comment.js';
 import Profile from '../models/Profile.js';
+import Credential from '../models/Credential.js';
 
 const postRouter = Router();
 postRouter.use(express.json());
@@ -123,7 +124,13 @@ postRouter.get('/profiles/:username', async (req,res) => {
                 renderObj.me = {
                     username: req.session.username
                 }
+
+                const credential = await Credential.findOne({username:req.session.username}).lean();
+                if(credential && credential.lastLoginAttempt){
+                    renderObj.previousLogin = credential.lastLoginAttempt;
+                }
             }
+            
         }
         res.render("profile", renderObj);
     }

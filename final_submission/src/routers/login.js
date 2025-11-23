@@ -28,9 +28,14 @@ loginRouter.post('/go-login', async (req, res) => {
         // Check if user exists and the provided password matches
         if (!user || !prof) return res.sendStatus(401);
 
+        // Save the previous login attempt 
+        const previousLogin = user.lastLoginAttempt;
+        user.lastLoginAttempt = new Date();
+        await user.save();
+
         // Lockout Check (does not work for some reason)
         if (user.lockUntil && user.lockUntil > Date.now()) {
-            return res.status(423).send("Account temporarily locked. Try again later.");
+            return res.sendStatus(423);
         }
             
         // Password Check
@@ -44,6 +49,7 @@ loginRouter.post('/go-login', async (req, res) => {
 
                 req.session.username = username;
                 req.session.name = prof.name;
+                req.session.previousLogin = previousLogin;
                 return res.sendStatus(200);
             }
             else {
