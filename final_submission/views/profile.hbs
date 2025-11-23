@@ -21,6 +21,11 @@
             <div class="bio">   
                 {{this.profile.bio}}
             </div>
+            {{#if previousLogin}}
+                <div class="last-login" style="font-size: small; color: gray; text-align: center; margin-top: 10px;">
+                    Last login attempt: {{previousLogin}}
+                </div>
+            {{/if}}
         </div>
         {{#if me}}
             {{>edit_opts me}}
