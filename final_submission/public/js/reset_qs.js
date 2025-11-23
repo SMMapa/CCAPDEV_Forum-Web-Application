@@ -1,46 +1,59 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const resetEmailBtn = document.querySelector("#resetSendEmailBtn");
-
-  resetEmailBtn.addEventListener("click", async function (e) {
+  const resetSendAnswersBtn = document.querySelector("#resetSendAnswersBtn");
+    const errorBox = document.querySelector("#errorm");
+    const inputForm = document.querySelector("#answer-form");
+  resetSendAnswersBtn.addEventListener("click", async function (e) {
       e.preventDefault();
 
       // Get input values
-      const email = document.getElementById("email").value;
+      const a1 = document.getElementById("ans1").value;
+      const a2 = document.getElementById("ans2").value;
 
 
       // Perform basic validation
-        if (!validateEmail(email)) {
-            showError("Please enter a valid email address.");
-            return;
+        if (validateField(a1) && validateField(a2)) {
+            sendCredentialsToServer(a1,a2);
         }
         else {
-            sendCredentialsToServer(email);
+            showError("Please provide answers to both security questions.");
+            return;
         }
 
   });
 
 
+    function validateField(value) {
+      return value.trim() !== "";
+  }
 
-  async function sendCredentialsToServer(email) {
 
-      const response = await fetch('/reset-send-email', {
+  function showError(msg) {
+        if (!errorBox) {
+            alert(msg); 
+            return;
+        }
+        errorBox.textContent = msg;
+    }
+
+
+  async function sendCredentialsToServer(a_1,a_2) {
+
+      let answers = {
+        a1: a_1,
+        a2: a_2
+      }
+      const response = await fetch('/reset_send_answers', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({email})
+        body: JSON.stringify({answers})
       })
       if(response.status === 403) {
-        alert("Invalid email");
+        alert("Invalid answer/s");
+        inputForm.remove();
       }
       
   }
 
-    function validateEmail(email) {
-        if (!email) return false;
-        const emailStr = email.toString().trim();
-        // generic RFC-ish pattern
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(emailStr);
-    }
 });

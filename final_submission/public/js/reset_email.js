@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   const resetEmailBtn = document.querySelector("#resetSendEmailBtn");
-
+  const errorBox = document.querySelector("#errorm");
   resetEmailBtn.addEventListener("click", async function (e) {
       e.preventDefault();
 
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function sendCredentialsToServer(email) {
 
-      const response = await fetch('/reset-send-email', {
+      const response = await fetch('/send_email', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -38,6 +38,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       
   }
+
+  function showError(msg) {
+        if (!errorBox) {
+            alert(msg); 
+            return;
+        }
+        errorBox.textContent = msg;
+    }
 
     function validateEmail(email) {
         if (!email) return false;

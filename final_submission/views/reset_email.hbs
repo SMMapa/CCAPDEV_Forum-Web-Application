@@ -12,13 +12,14 @@
             <div class="login-header">
             <h2></h2>
             </div>
-            <form id="login-form" action ="/reset-send-email" method = "post">
+            <form id="login-form" action ="/send_email" method = "post">
             <label for="username">Email:</label>
             <input type="text" id="email" name="email" required>
 
 
             <button type="submit" id ="resetSendEmailBtn">Submit</button>
-            <p><a href="/home">Cancel</a>.</p>
+            <p><a href="/home">Cancel</a></p>
+            <p id="errorm"></p>
             </form>
         </div>
     </div>
