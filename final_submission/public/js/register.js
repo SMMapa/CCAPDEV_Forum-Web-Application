@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const sq_2 = formData.get("sq2");
         const an_2 = formData.get("a2");
 
+        console.log(an_2);
         // ----- Client-side validation -----
         if (!validateField(realName)) {
             showError("Name is required.");
@@ -57,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if(!validateSQAnswer(an_1) || !validateSQAnswer(an_2)) {
+        if(!validateField(an_1) || !validateField(an_2)) {
             showError(
               "Answers are required for both security questions."
             );
@@ -116,9 +117,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return emailRegex.test(emailStr);
     }
 
-    function validateSQAnswer(answer) {
-        if(!answer) return false;
-    }
 
     // Enforce password length + complexity (v & vi in your checklist)
     function validatePassword(password) {

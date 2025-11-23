@@ -79,10 +79,10 @@ registerRouter.post('/make-user', async (req, res) => {
 
     const sq = await SecQuestion.create({
       email,
-      sq_1,
-      hash_a1,
-      sq_2,
-      hash_a2
+      question1: sq_1,
+      answer1: hash_a1,
+      question2: sq_2,
+      answer2: hash_a2
     })
 
     if(!sq) {
