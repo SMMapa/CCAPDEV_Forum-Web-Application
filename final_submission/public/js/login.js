@@ -33,8 +33,14 @@ document.addEventListener("DOMContentLoaded", function () {
       if(response.status === 200) {
         window.location.href = "/home";
       }
-      else {
-        alert("Invalid username and/or password");
-      }
+      else if (response.status === 423) {
+        alert("Account temporarily locked. Try again later."); 
+      } 
+      else if (response.status === 401) {
+        alert("Invalid username and/or password.");
+    }
+    else {
+        alert("Something went wrong. Please try again later.");
+    }
   }
 });

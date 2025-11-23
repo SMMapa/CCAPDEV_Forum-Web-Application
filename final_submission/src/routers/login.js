@@ -30,7 +30,7 @@ loginRouter.post('/go-login', async (req, res) => {
 
         // Lockout Check (does not work for some reason)
         if (user.lockUntil && user.lockUntil > Date.now()) {
-            return res.status(423).send("Account temporarily locked. Try again later.");
+            return res.sendStatus(423);
         }
             
         // Password Check
