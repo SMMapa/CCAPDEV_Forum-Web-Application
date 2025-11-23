@@ -1,0 +1,24 @@
+  <title>Reset Password</title>
+  <link rel="stylesheet" type="text/css" href="/static/stylesheets/login.css">
+  <script src="static/js/reset_email.js"></script>
+
+
+    <div class="container">
+        <div class="login-container">
+            <h2>Reset Password</h2>
+        </div>
+
+        <div class="login-input-container">
+            <div class="login-header">
+            <h2></h2>
+            </div>
+            <form id="login-form" action ="/reset-send-email" method = "post">
+            <label for="username">Email:</label>
+            <input type="text" id="email" name="email" required>
+
+
+            <button type="submit" id ="resetSendEmailBtn">Submit</button>
+            <p><a href="/home">Cancel</a>.</p>
+            </form>
+        </div>
+    </div>

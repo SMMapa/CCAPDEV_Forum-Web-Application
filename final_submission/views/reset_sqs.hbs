@@ -1,0 +1,26 @@
+  <title>Reset Password</title>
+  <link rel="stylesheet" type="text/css" href="/static/stylesheets/login.css">
+  <script src="static/js/reset_email.js"></script>
+
+
+    <div class="container">
+        <div class="login-container">
+            <h2>Reset Password</h2>
+        </div>
+
+        <div class="login-input-container">
+            <div class="login-header">
+            <h2></h2>
+            </div>
+            <form id="login-form" action ="/reset_send_answers" method = "post">
+            <label for="sq_1">{{q1}}</label>
+            <input type="text" id="ans1" name="ans1" required>
+
+            <label for="sq_2">{{q2}}</label>
+            <input type="text" id="ans2" name="ans2" required>
+
+
+            <button type="submit" id ="resetSendAnswersBtn">Submit</button>
+            </form>
+        </div>
+    </div>
