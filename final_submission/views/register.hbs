@@ -24,6 +24,20 @@
             <label for="username">Username:</label> 
             <input type="text" id="username" name="username" required> 
 
+            <label for="sq1">Security question 1: </label>
+            <select name="sq1" id="sq1">
+                {{#each sqones}} {{>sq_opts this}} {{/each}}
+            </select>
+            <label for="a1">Answer: </label>
+            <input type="text" id="a1" name="a1" required> 
+            <label for="sq2">Security question 2: </label>
+            <select name="sq2" id="sq2">
+                {{#each sqtwos}} {{>sq_opts this}} {{/each}}
+            </select>
+            <label for="a2">Answer: </label>
+            <input type="text" id="a2" name="a2" required> 
+
+
             <button type="submit" id="registerBtn">Register</button>
             <p>Didn't mean to register? <a href="/home">Cancel</a>.</p>
             <p id="errorm"></p>
