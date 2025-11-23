@@ -6,7 +6,7 @@ import editProfileRouter from './edit_profile.js';
 import uploadRouter from './file_upload.js';
 import loginRouter from './login.js';
 import editPostRouter from './edit_post.js';
-
+import resetRouter from "./reset_password.js";
 const router = Router();
 
 router.use(registerRouter);
@@ -16,6 +16,7 @@ router.use(editProfileRouter);
 router.use(uploadRouter);
 router.use(loginRouter);
 router.use(editPostRouter);
+router.use(resetRouter);
 
 router.get('/', function(_req,res) {
     res.redirect('/home');

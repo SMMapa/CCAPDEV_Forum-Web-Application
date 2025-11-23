@@ -30,10 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
         },
         body: JSON.stringify({email})
       })
-      if(response.status === 200) {
-        window.location = '/reset_q';
-      }
-      else if(response.status === 403) {
+      if(response.status === 403) {
         alert("Invalid email");
       }
       
