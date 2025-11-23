@@ -17,37 +17,67 @@ registerRouter.get('/register', async (req,res) => {
 });
 
 
-registerRouter.post('/make-user', async (req,res) => {
-    console.log("Test")
-    console.log(req.body);
-    try {
-        const check = await Credential.findOne({username: req.body.username}).lean().exec();
-        if(!check) {
-            bcrypt.hash(req.body.password, r).then(async function(hash) {
-                const result = await Credential.create({
-                    email: req.body.email,
-                    password: hash,
-                    username:req.body.username
-                });
-                if(result) {
-                    const result2 = await Profile.create({
-                        username: req.body.username,
-                        name: req.body.name,
-                        bio: "Default bio"
-                    })
-                    if(result2) {
-                        res.redirect('/login');
-                    }
-                }
-            });
-        }else {
-            res.sendStatus(403);
-        }
-    }catch(err) {
-        console.error(err);
+registerRouter.post('/make-user', async (req, res) => {
+  console.log("Test");
+  console.log(req.body);
+
+  const { email, username, password, name } = req.body;
+
+  const MIN_PASSWORD_LENGTH = 12;
+  if (!password || password.length < MIN_PASSWORD_LENGTH) {
+    return res.status(400).send(
+      `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`
+    );
+  }
+  // - at least one lowercase
+  // - at least one uppercase
+  // - at least one digit
+  // - at least one special character
+  const complexityRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+$/;
+
+  if (!complexityRegex.test(password)) {
+    return res.status(400).send(
+      'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character.'
+    );
+  }
+
+  try {
+    const existing = await Credential.findOne({ username }).lean().exec();
+
+    if (existing) {
+      return res.sendStatus(403); // username taken
     }
-    
+
+    const hash = await bcrypt.hash(password, r); // assuming r is your salt rounds
+
+    const cred = await Credential.create({
+      email,
+      password: hash,
+      username
+    });
+
+    if (!cred) {
+      return res.status(500).send('Could not create credentials');
+    }
+
+    const profile = await Profile.create({
+      username,
+      name,
+      bio: "Default bio"
+    });
+
+    if (!profile) {
+      return res.status(500).send('Could not create profile');
+    }
+
+    return res.redirect('/login');
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send('Server error');
+  }
 });
+
 
 registerRouter.get('/login', async (req, res) => {
 

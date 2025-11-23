@@ -1,4 +1,4 @@
-const User = function (name, email, password, username){
+const User = function (name, email, password, username) {
     this.name = name;
     this.email = email;
     this.password = password;
@@ -8,62 +8,127 @@ const User = function (name, email, password, username){
 const users = [];
 
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Test")
+    console.log("Test");
     const userForm = document.querySelector("#register-form");
     const userInput = document.querySelector("#registerBtn");
+    const errorBox = document.querySelector("#errorm");
 
     userInput?.addEventListener("click", async function (e) {
         e.preventDefault();
 
+        if (errorBox) errorBox.textContent = "";
+
         const formData = new FormData(userForm);
-        
-        // Extract values from FormData object
-        const realName = formData.get('realname');
 
-        //Make a validation email function
-        //It basically gets the entered input in the email field then checks if it ends with '@<email-website>.com' 
-        const email = formData.get('email');
-        const password = formData.get('password');
-        const username = formData.get('username');
+        const realName = formData.get("realname");
+        const email    = formData.get("email");
+        const password = formData.get("password");
+        const username = formData.get("username");
 
+        // ----- Client-side validation -----
+        if (!validateField(realName)) {
+            showError("Name is required.");
+            return;
+        }
 
-        // Perform validation
-        if (validateField(username) && validateField(email) && validateField(password) && validateField(realName)) {
-            let u = new User(realName, email, password, username);
+        if (!validateField(username)) {
+            showError("Username is required.");
+            return;
+        }
 
+        if (!validateEmail(email)) {
+            showError("Please enter a valid email address.");
+            return;
+        }
 
-            let registerobject = {
-                name: u.name,
-                email: u.email,
-                password: u.password,
-                username: u.username
-            }
+        if (!validatePassword(password)) {
+            // Message is also in validatePassword, but in case you want a generic one:
+            showError(
+              "Password must be at least 12 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character."
+            );
+            return;
+        }
 
-            
+        // If all validations pass, build the object
+        let u = new User(realName, email, password, username);
 
-            let rgstring = JSON.stringify(registerobject);
-            console.log(rgstring)
-            try {
-                const response = await fetch('/make-user', {
-                    method: 'POST',
-                    body: rgstring,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                })
-                if (response.ok) {
-                    console.log('success');
-                }else if(response.status === 403) {
-                    let e = document.createTextNode("Error: user already exists!");
-                    document.querySelector("#errorm").append(e);
+        let registerobject = {
+            name: u.name,
+            email: u.email,
+            password: u.password,
+            username: u.username
+        };
+
+        let rgstring = JSON.stringify(registerobject);
+        console.log(rgstring);
+
+        try {
+            const response = await fetch("/make-user", {
+                method: "POST",
+                body: rgstring,
+                headers: {
+                    "Content-Type": "application/json"
                 }
-            } catch (err) {
-                console.error(err);
+            });
+
+            if (response.ok) {
+                console.log("success");
+            } else if (response.status === 403) {
+                showError("Error: user already exists!");
+            } else {
+                showError("Registration failed. Please try again.");
             }
+        } catch (err) {
+            console.error(err);
+            showError("A network error occurred. Please try again.");
         }
     });
 
     function validateField(value) {
-        return value.trim() !== "";
+        if (value == null) return false;
+        return value.toString().trim() !== "";
+    }
+
+    function validateEmail(email) {
+        if (!email) return false;
+        const emailStr = email.toString().trim();
+        // generic RFC-ish pattern
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(emailStr);
+    }
+
+    // Enforce password length + complexity (v & vi in your checklist)
+    function validatePassword(password) {
+        if (!password) return false;
+        const pwd = password.toString();
+
+        // Length requirement (adjust if your policy says 8 instead of 12)
+        const MIN_LENGTH = 12;
+        if (pwd.length < MIN_LENGTH) {
+            console.warn("Password too short");
+            return false;
+        }
+
+        // Complexity:
+        //  - at least one lowercase
+        //  - at least one uppercase
+        //  - at least one digit
+        //  - at least one special character
+        const complexityRegex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+$/;
+
+        const isValid = complexityRegex.test(pwd);
+        if (!isValid) {
+            console.warn("Password does not meet complexity requirements");
+        }
+        return isValid;
+    }
+
+    function showError(msg) {
+        if (!errorBox) {
+            alert(msg); 
+            return;
+        }
+        errorBox.textContent = msg;
     }
 });
