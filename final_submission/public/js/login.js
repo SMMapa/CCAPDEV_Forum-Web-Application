@@ -33,5 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if(response.status === 200) {
         window.location.href = "/home";
       }
+      else {
+        alert("Invalid username and/or password");
+      }
   }
 });
