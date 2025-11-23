@@ -23,27 +23,42 @@ loginRouter.post('/go-login', async (req, res) => {
         const { username, password } = req.body;
 
         // Retrieve user from database based on the provided handle
-        const user = await Credential.findOne({ username: username }).lean().exec();
+        const user = await Credential.findOne({ username: username }).exec();
         const prof = await Profile.findOne({username: username}).lean().exec();
         // Check if user exists and the provided password matches
-        if (user && prof) {
-            // Authentication successful
-            //console.log("user exists");
-            bcrypt.compare(password,user.password,function(err,result) {
-                if(result) {
-                    req.session.username = username;
-                    req.session.name = prof.name;
-                    res.sendStatus(200);
-                }
-                else {
-                    res.sendStatus(401);
-                }
-            });
-        } else {
-            // Authentication failed
-            res.sendStatus(401);
-        
+        if (!user || !prof) return res.sendStatus(401);
+
+        // Lockout Check (does not work for some reason)
+        if (user.lockUntil && user.lockUntil > Date.now()) {
+            return res.status(423).send("Account temporarily locked. Try again later.");
         }
+            
+        // Password Check
+        bcrypt.compare(password,user.password,async(err,result) => {
+            if(result) {
+                // Authentication successful
+                //console.log("user exists");
+                user.failedAttempts = 0;
+                user.lockUntil = null;
+                await user.save();
+
+                req.session.username = username;
+                req.session.name = prof.name;
+                return res.sendStatus(200);
+            }
+            else {
+                // Authentication failed, increase attempts
+                user.failedAttempts += 1;
+
+                if (user.failedAttempts >= 5) {
+                    // Lock account for n minutes (n=1, update this if testing)
+                    user.lockUntil = new Date(Date.now() + 1 * 60 * 1000);
+                }
+
+                await user.save();
+                return res.sendStatus(401);
+            }
+        });
     } catch (error) {
         // Error occurred while processing the request
         console.error('Error:', error);
