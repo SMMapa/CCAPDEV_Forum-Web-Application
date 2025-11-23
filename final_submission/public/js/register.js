@@ -71,8 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            if (response.ok) {
-                console.log("success");
+            if (response.status === 200) {
+                window.location = '/login';
             } else if (response.status === 403) {
                 showError("Error: user already exists!");
             } else {

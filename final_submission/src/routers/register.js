@@ -67,14 +67,16 @@ registerRouter.post('/make-user', async (req, res) => {
       bio: "Default bio"
     });
 
-    if (!profile) {
+
+    if(profile) {
+      res.sendStatus(200);
+    }else {
       return res.status(500).send('Could not create profile');
     }
 
-    return res.redirect('/login');
   } catch (err) {
     console.error(err);
-    return res.status(500).send('Server error');
+    res.status(500).send('Server error');
   }
 });
 
