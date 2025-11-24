@@ -4,9 +4,6 @@ import bcrypt from 'bcryptjs';
 import Credential from '../models/Credential.js';
 import Profile from '../models/Profile.js';
 import { logInputValidation, logAuthAttempt } from '../middleware/logger.js';
-import { requireRole } from "../middleware/roles.js";
-import { logAccessControl } from "../middleware/logger.js";
-
 
 const loginRouter = Router();
 /*const db = getDb();
@@ -95,18 +92,3 @@ loginRouter.get("/logout", async (req,res) => {
 });
 
 export default loginRouter;
-
-//managerRouter
-
-const managerRouter = Router();
-
-managerRouter.get(
-    "/manager/dashboard",
-    requireRole("manager"),
-    async (req, res) => {
-        await logAccessControl(req, "Manager accessed dashboard");
-        res.render("managerDashboard", { username: req.session.username });
-    }
-);
-
-export default managerRouter;
