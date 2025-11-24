@@ -4,6 +4,11 @@ const credSchema = new Schema({
     email: String,
     password: String,
     username: String,
+    role: { 
+        type: String, 
+        enum: ["admin", "manager", "customer"], 
+        default: "customer" 
+    },
     failedAttempts: {type: Number, default: 0},
     lockUntil: {type: Date, default: null},
     lastLoginAttempt: { type: Date, default: null }
