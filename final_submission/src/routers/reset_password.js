@@ -30,9 +30,7 @@ resetRouter.post('/set_new_pw', async (req,res) => {
         bcrypt.compare(o,cred.password,async (err,result) => {
             if(result && (n === c)) {
                 const hash = await bcrypt.hash(n, r);
-                cred.password = hash;
-                cred.lastChange = Date.now();
-                await cred.save();
+                Credential.findOneAndUpdate({email},{$set: {password:hash}});
                 res.sendStatus(200);
                 req.session.destroy();
             }

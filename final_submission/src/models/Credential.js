@@ -11,7 +11,7 @@ const credSchema = new Schema({
     },
     failedAttempts: {type: Number, default: 0},
     lockUntil: {type: Date, default: null},
-    lastLoginAttempt: { type: Date, default: null }
+    lastLoginAttempt: { type: Date, default: null },
 });
 
 const Credential = model('Credential', credSchema);
