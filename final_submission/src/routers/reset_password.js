@@ -18,7 +18,8 @@ resetRouter.get('/set_new', async (req,res) => {
     if(req.session.anon_valid) {
         res.render("set_new");
     }else {
-        console.log(req.session.anon_valid)
+         req.session.destroy();
+         res.redirect("/error");
     }
 })
 
@@ -73,7 +74,8 @@ resetRouter.post('/send_email', async (req,res) => {
 resetRouter.post('/reset_send_answers', async (req,res) => {
     const {a1, a2} = req.body;
     const email = req.session.email;
-    try {
+    if(email) {
+        try {
         const check1 = await SecQuestion.findOne({email}).lean().exec();
         const check2 = await Credential.findOne({email}).lean().exec();
         if(check1 && check2) {
@@ -95,9 +97,13 @@ resetRouter.post('/reset_send_answers', async (req,res) => {
                         return res.sendStatus(403);
                     }}) 
         }
-    }catch(err) {
+         }catch(err) {
         req.session.destroy();
         return res.sendStatus(500);
+        }
+    }else {
+        req.session.destroy();
+        res.redirect("/error");
     }
 })
 
@@ -120,6 +126,9 @@ resetRouter.get('/reset_q', async (req,res) => {
         }catch(err) {
             return res.sendStatus(500);
         }
+    } else {
+         req.session.destroy();
+        res.redirect("/error");
     }
 
 
