@@ -13,5 +13,8 @@
     <div class="header-profile" >
         <img class="pfp-header" src="/static/profile_assets/{{this.username}}.jpg">
         <a href="/profiles/{{this.username}}" class="white-link"><b>{{this.username}}</b></a>
+        {{#if (eq this.role "admin")}}
+            <a href="/admin/logs" class="white-link" style="margin-left: 20px;">View Security Logs</a>
+        {{/if}}
     </div>
 </div>

@@ -7,14 +7,15 @@ document.addEventListener("DOMContentLoaded", function () {
       // Get input values
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
+      sendCredentialsToServer(username, password);
 
       // Perform basic validation
-      if (validateField(username) && validateField(password)) {
+      /*if (validateField(username) && validateField(password)) {
           // Send the credentials to the server for further validation
           sendCredentialsToServer(username, password);
       } else {
           alert("Please enter valid credentials.");
-      }
+      }*/
   });
 
   function validateField(value) {

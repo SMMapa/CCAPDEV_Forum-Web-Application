@@ -1,0 +1,80 @@
+<link href="/static/stylesheets/home-post.css" rel="stylesheet" type="text/css" media="all"/>   
+<link rel="stylesheet" href="/static/stylesheets/post-only.css" type="text/css" media="all"/>
+<title>Security Logs</title>
+
+{{#if user}}
+    {{> header_in user}}
+{{else}}
+    {{> header_out}}
+{{/if}}
+
+<div id="page-content">
+    <div id="left-side">
+        <div class="profile-page">
+            <h2>Security Logs</h2>
+            <p>Admin view of all security events: logins, input validation, access control.</p>
+        </div>
+    </div>
+
+    <div id="post-side">
+        <div id="post-list">
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>User</th>
+                        <th>IP</th>
+                        <th>Endpoint</th>
+                        <th>Type</th>
+                        <th>Message</th>
+                        <th>Payload</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each logs}}
+                    <tr>
+                        <td>{{this.timestamp}}</td>
+                        <td>{{this.user}}</td>
+                        <td>{{this.ip}}</td>
+                        <td>{{this.endpoint}}</td>
+                        <td>{{this.type}}</td>
+                        <td>{{this.message}}</td>
+                        <td><pre>{{json this.payload}}</pre></td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Table styling to match forum posts layout */
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.log-table th, .log-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+.log-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.log-table tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+</style>

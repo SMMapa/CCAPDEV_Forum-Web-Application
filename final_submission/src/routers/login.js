@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import bcrypt from 'bcryptjs';
 import Credential from '../models/Credential.js';
 import Profile from '../models/Profile.js';
-import { logInputValidation, logAuthAttempt } from '../middleware/logger.js';
+import { logSecurityEvent, validateField } from "../middleware/logger.js";
 
 const loginRouter = Router();
 /*const db = getDb();
@@ -23,8 +23,8 @@ loginRouter.post('/go-login', async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        if (!username || !password) {
-            await logInputValidation(req, "Username or password missing");
+        // Input validation
+        if (!(await validateField(req, username, "username")) || !(await validateField(req, password, "password"))) {
             return res.sendStatus(400);
         }
 
@@ -33,7 +33,7 @@ loginRouter.post('/go-login', async (req, res) => {
         const prof = await Profile.findOne({username: username}).lean().exec();
         // Check if user exists and the provided password matches
         if (!user || !prof) {
-            await logAuthAttempt(req, "Username or profile not found", false);
+            await logSecurityEvent(req, "auth", "Failed login - invalid username or profile not found");
             return res.sendStatus(401);
         }
 
@@ -44,7 +44,7 @@ loginRouter.post('/go-login', async (req, res) => {
 
         // Lockout Check (does not work for some reason)
         if (user.lockUntil && user.lockUntil > Date.now()) {
-            await logAuthAttempt(req, "Account temporarily locked", false);
+            await logSecurityEvent(req, "auth", "Failed login - account temporarily locked");
             return res.sendStatus(423);
         }
             
@@ -61,7 +61,7 @@ loginRouter.post('/go-login', async (req, res) => {
                 req.session.name = prof.name;
                 req.session.role = user.role;
                 req.session.previousLogin = previousLogin;
-                await logAuthAttempt(req, "User logged in successfully", true);                
+                await logSecurityEvent(req, "auth", "Successful login");
                 return res.sendStatus(200);
             }
             else {
@@ -74,7 +74,7 @@ loginRouter.post('/go-login', async (req, res) => {
                 }
 
                 await user.save();
-                await logAuthAttempt(req, "Incorrect password", false);
+                await logSecurityEvent(req, "auth", "Failed login - incorrect password");
 
                 return res.sendStatus(401);
             }
@@ -82,6 +82,7 @@ loginRouter.post('/go-login', async (req, res) => {
     } catch (error) {
         // Error occurred while processing the request
         console.error('Error:', error);
+        await logSecurityEvent(req, "auth", "Server error during login");
        res.sendStatus(500);
     }
 });
