@@ -1,0 +1,32 @@
+
+  <title>Set new password</title>
+  <link rel="stylesheet" type="text/css" href="/static/stylesheets/login.css">
+  <script src="static/js/set_new.js"></script>
+
+
+    <div class="container">
+        <div class="login-container">
+            <h2>Set new password</h2>
+        </div>
+
+        <div class="login-input-container">
+            <div class="login-header">
+            <h2></h2>
+            </div>
+            <form id="res-form" action ="/set_new_pw" method = "post">
+
+
+
+            <label for="password">Old password:</label>
+            <input type="password" id="oldpassword" name="oldpassword" required>
+
+            <label for="password">New password:</label>
+            <input type="password" id="newpassword" name="newpassword" required>
+
+            <label for="password">Confirm new password:</label>
+            <input type="password" id="confirm" name="confirm" required>
+            <button type="submit" id ="sendPwsBtn">Submit</button>
+            <p id="errorm"></p>
+            </form>
+        </div>
+    </div>

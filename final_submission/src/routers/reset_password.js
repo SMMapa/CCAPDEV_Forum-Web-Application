@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb';
 import Credential from '../models/Credential.js';
 import SecQuestion from '../models/SecQuestion.js';
 
+const r = 15;
 const resetRouter = Router();
 
 
@@ -12,6 +13,41 @@ resetRouter.get('/reset', async (req,res) => {
     console.log("test")
     res.render("reset_email");
 });
+
+resetRouter.get('/set_new', async (req,res) => {
+    if(req.session.anon_valid) {
+        res.render("set_new");
+    }else {
+        console.log(req.session.anon_valid)
+    }
+})
+
+resetRouter.post('/set_new_pw', async (req,res) => {
+    if(req.session.anon_valid && req.session.email) {
+        const {o,n,c} = req.body;
+        const email = req.session.email;
+        const cred = await Credential.findOne({email}).lean().exec();
+        bcrypt.compare(o,cred.password,async (err,result) => {
+            if(result && (n === c)) {
+                const hash = await bcrypt.hash(n, r);
+                cred.password = hash;
+                cred.lastChange = Date.now();
+                await cred.save();
+                res.sendStatus(200);
+                req.session.destroy();
+            }
+            else
+            {
+                req.session.destroy();
+                return res.sendStatus(403);
+            }
+        })
+    }else
+            {
+                req.session.destroy();
+                return res.sendStatus(403);
+            }
+})
 
 resetRouter.post('/send_email', async (req,res) => {
     const email = req.body.email;
@@ -26,9 +62,11 @@ resetRouter.post('/send_email', async (req,res) => {
             return res.sendStatus(200);
         }
         else {
+            req.session.destroy();
             return res.sendStatus(403);
         }
     }catch(err) {
+        req.session.destroy();
         return res.sendStatus(500);
     }
 });
@@ -38,31 +76,29 @@ resetRouter.post('/reset_send_answers', async (req,res) => {
     const {a1, a2} = req.body;
     const email = req.session.email;
     try {
-        let flag1 = 0;
-        let flag2 = 0;
         const check1 = await SecQuestion.findOne({email}).lean().exec();
         const check2 = await Credential.findOne({email}).lean().exec();
         if(check1 && check2) {
            
-                    bcrypt.compare(a1,check1.answer1,function(err,result) {
+                    bcrypt.compare(a1,check1.answer1,async(err,result) => {
                         if(result) {
-                            flag1 = 1;
+                            bcrypt.compare(a2,check1.answer2,async(err,result1) => {
+                             if(result1) {
+                                req.session.anon_valid = 1;
+                                return res.sendStatus(200);
+                                }else {
+                                    req.session.destroy();
+                                    return res.sendStatus(403);
+                                }
+                            })
                         }
-                    })
-                    bcrypt.compare(a2,check1.answer2,function(err,result){
-                        if(result) {
-                            flag2 = 1;
-                        }
-                    })
-                    if(flag1 && flag2) {
-                        return res.sendStatus(200);
-                    }
                     else {
                         req.session.destroy();
                         return res.sendStatus(403);
-                    }
+                    }}) 
         }
     }catch(err) {
+        req.session.destroy();
         return res.sendStatus(500);
     }
 })
