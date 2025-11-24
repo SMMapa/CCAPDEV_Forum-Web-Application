@@ -93,3 +93,18 @@ loginRouter.get("/logout", async (req,res) => {
 });
 
 export default loginRouter;
+
+//managerRouter
+
+const managerRouter = Router();
+
+managerRouter.get(
+    "/manager/dashboard",
+    requireRole("manager"),
+    async (req, res) => {
+        await logAccessControl(req, "Manager accessed dashboard");
+        res.render("managerDashboard", { username: req.session.username });
+    }
+);
+
+export default managerRouter;
