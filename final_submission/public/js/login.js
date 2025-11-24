@@ -33,6 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
       if(response.status === 200) {
         window.location.href = "/home";
       }
+      else if (response.status === 400) {
+        alert("Please fill all fields."); 
+      } 
       else if (response.status === 423) {
         alert("Account temporarily locked. Try again later."); 
       } 
