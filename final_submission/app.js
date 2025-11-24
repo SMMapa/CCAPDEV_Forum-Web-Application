@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url';
 import express from 'express';
 import exphbs from 'express-handlebars';
 
+import managerRouter from "./routes/manager.js";
+import adminManagerRouter from "./routes/adminManager.js";
 
 //import { connectToMongo } from "./src/db/conn.js";
 import router from "./src/routers/index.js";
@@ -17,6 +19,8 @@ import sess from "./src/db/sess.js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 
+app.use(managerRouter);
+app.use(adminManagerRouter);
 app.use('/static',express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(sess);
