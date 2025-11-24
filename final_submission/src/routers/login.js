@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs';
 import Credential from '../models/Credential.js';
 import Profile from '../models/Profile.js';
 import { logInputValidation, logAuthAttempt } from '../middleware/logger.js';
+import { requireRole } from "../middleware/roles.js";
+import { logAccessControl } from "../middleware/logger.js";
 
 
 const loginRouter = Router();
