@@ -5,7 +5,6 @@ import Credential from '../models/Credential.js';
 import Profile from '../models/Profile.js';
 import { logInputValidation, logAuthAttempt } from '../middleware/logger.js';
 
-
 const loginRouter = Router();
 /*const db = getDb();
 const credentials = db.collection('credentials');
