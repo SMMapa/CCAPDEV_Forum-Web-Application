@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 
 import Credential from '../models/Credential.js';
 import SecQuestion from '../models/SecQuestion.js';
+import { logSecurityEvent, validateField } from "../middleware/logger.js";
 
 const r = 15;
 const resetRouter = Router();
@@ -31,7 +32,8 @@ resetRouter.post('/set_new_pw', async (req,res) => {
         bcrypt.compare(o,cred.password,async (err,result) => {
             if(result && (n === c)) {
                 const hash = await bcrypt.hash(n, r);
-                Credential.findOneAndUpdate({email},{$set: {password:hash}});
+                await Credential.findOneAndUpdate({email},{$set: {password:hash}});
+                await logSecurityEvent(req, "auth", "Password successfully changed");
                 res.sendStatus(200);
                 req.session.destroy();
             }
@@ -61,6 +63,7 @@ resetRouter.post('/send_email', async (req,res) => {
             return res.sendStatus(200);
         }
         else {
+            await logSecurityEvent(req, "auth", "Incorrect email during password reset");
             req.session.destroy();
             return res.sendStatus(403);
         }
@@ -87,21 +90,25 @@ resetRouter.post('/reset_send_answers', async (req,res) => {
                                 req.session.anon_valid = 1;
                                 return res.sendStatus(200);
                                 }else {
+                                    await logSecurityEvent(req, "auth", "Incorrect SQ answer");
                                     req.session.destroy();
                                     return res.sendStatus(403);
                                 }
                             })
                         }
                     else {
+                        await logSecurityEvent(req, "auth", "Incorrect SQ answer");
                         req.session.destroy();
                         return res.sendStatus(403);
                     }}) 
         }
          }catch(err) {
+        await logSecurityEvent(req, "auth", "Incorrect SQ answer");
         req.session.destroy();
         return res.sendStatus(500);
         }
     }else {
+        await logSecurityEvent(req, "auth", "Malformed");
         req.session.destroy();
         res.redirect("/error");
     }

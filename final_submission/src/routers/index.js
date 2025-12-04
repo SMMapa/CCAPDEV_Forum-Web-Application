@@ -20,9 +20,9 @@ router.use(uploadRouter);
 router.use(loginRouter);
 router.use(editPostRouter);
 router.use(resetRouter);
-router.use(managerRouter);
+//router.use(managerRouter);
 router.use(adminManagerRouter);
-router.use('/admin', adminRouter);
+router.use(adminRouter);
 
 router.get('/', function(_req,res) {
     res.redirect('/home');

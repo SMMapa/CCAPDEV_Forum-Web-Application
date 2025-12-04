@@ -9,7 +9,7 @@ export function requireRole(...allowedRoles) {
 
         if (!allowedRoles.includes(req.session.role)) {
             await logAccessControl(req, `Access denied: ${req.session.role} attempted to access restricted route`);
-            return res.status(403).send("Forbidden Access");
+            return res.status(404).send("Not found");
         }
 
         next();

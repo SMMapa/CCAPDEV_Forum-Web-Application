@@ -17,13 +17,5 @@ adminManagerRouter.get(
 );
 
 // Example: Add product
-adminManagerRouter.post(
-    "/inventory/add",
-    requireRole("admin", "manager"),
-    (req, res) => {
-        console.log("Product added:", req.body);
-        res.sendStatus(201);
-    }
-);
 
 export default adminManagerRouter;
